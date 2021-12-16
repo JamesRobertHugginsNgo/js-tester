@@ -1,2 +1,52 @@
-function JsTester(...e){if(1===e.length)return JsTester(null,...e);if(2===e.length)return JsTester({},...e);const[r,o,n]=e;let t=r,s=Promise.resolve().then(()=>(o&&console.log(o),n(t))).then((e=t)=>{t=e});return{test(...e){if(1===e.length)return JsTester(null,...e);const[r,o]=e;return s=s.then(()=>(r&&console.log("  "+r),o(t))).then(e=>{e?console.log("    %c✔ Passed","color: green;"):console.log("    %c✖ Failed","color: red;")},()=>{console.error("Error")}),this},end(){return s}}}module.exports=JsTester;
-//# sourceMappingURL=js-tester.js.map
+function JsTester(...args) {
+	if (args.length === 1) {
+		return JsTester(null, ...args);
+	}
+	if (args.length === 2) {
+		return JsTester({}, ...args);
+	}
+
+	const [initValue, label, code] = args;
+	let value = initValue;
+
+	let promise = Promise.resolve().then(() => {
+		if (label) {
+			console.log(label);
+		}
+		return code(value);
+	}).then((returnedValue = value) => {
+		value = returnedValue;
+	});
+
+	return {
+		test(...args) {
+			if (args.length === 1) {
+				return JsTester(null, ...args);
+			}
+			const [label, code] = args;
+
+			promise = promise.then(() => {
+				if (label) {
+					console.log(`  ${label}`);
+				}
+				return code(value);
+			}).then((passed) => {
+				if (passed) {
+					console.log('    %c\u2714 Passed', 'color: green;');
+				} else {
+					console.log('    %c\u2716 Failed', 'color: red;');
+				}
+			}, () => {
+				console.error('Error');
+			});
+
+			return this;
+		},
+
+		end() {
+			return promise;
+		}
+	};
+}
+
+module.exports = JsTester;

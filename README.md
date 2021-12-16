@@ -1,3 +1,3 @@
-# web-js-tester
+# js-tester
 
 A simple function for testing JavaScript codes.
