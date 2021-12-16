@@ -1,9 +1,9 @@
-function JsTester(...args) {
+function jsTester(...args) {
 	if (args.length === 1) {
-		return JsTester(null, ...args);
+		return jsTester(null, ...args);
 	}
 	if (args.length === 2) {
-		return JsTester({}, ...args);
+		return jsTester({}, ...args);
 	}
 
 	const [initValue, label, code] = args;
@@ -21,7 +21,7 @@ function JsTester(...args) {
 	return {
 		test(...args) {
 			if (args.length === 1) {
-				return JsTester(null, ...args);
+				return jsTester(null, ...args);
 			}
 			const [label, code] = args;
 
@@ -50,5 +50,5 @@ function JsTester(...args) {
 }
 
 // @ifdef NODE
-module.exports = JsTester;
+module.exports = jsTester;
 // @endif
