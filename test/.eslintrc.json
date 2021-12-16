@@ -1,0 +1,9 @@
+{
+    "env": {
+        "commonjs": false,
+        "browser": true,
+        "node": false
+    },
+    "rules": {
+    }
+}

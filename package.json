@@ -1,0 +1,30 @@
+{
+  "name": "web-js-tester",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesRobertHugginsNgo/web-js-tester.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesRobertHugginsNgo/web-js-tester/issues"
+  },
+  "homepage": "https://github.com/JamesRobertHugginsNgo/web-js-tester#readme",
+  "devDependencies": {
+    "@babel/core": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "del": "^6.0.0",
+    "eslint": "^8.4.1",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-preprocess": "^4.0.2",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-uglify": "^3.0.2"
+  }
+}
