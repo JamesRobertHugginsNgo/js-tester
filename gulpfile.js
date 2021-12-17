@@ -2,6 +2,7 @@ const del = require('del');
 const gulp = require('gulp');
 const gulpBabel = require('gulp-babel');
 const gulpPreProcess = require('gulp-preprocess');
+const gulpRename = require('gulp-rename');
 const gulpSourceMaps = require('gulp-sourcemaps');
 const gulpTerser = require('gulp-terser');
 const gulpUglify = require('gulp-uglify');
@@ -12,36 +13,40 @@ function cleanup() {
 
 function browserEs5Build() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { BROWSER: true } }))
+		.pipe(gulpPreProcess({ context: { TARGET: "BROWSER" } }))
+		.pipe(gulp.dest('dist/es5'))
+		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())
 		.pipe(gulpBabel())
 		.pipe(gulpUglify())
 		.pipe(gulpSourceMaps.write('.'))
-		.pipe(gulp.dest('dist/browser/es5'));
+		.pipe(gulp.dest('dist/es5'));
 }
 
 function browserEs6Build() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { BROWSER: true } }))
+		.pipe(gulpPreProcess({ context: { TARGET: "BROWSER" } }))
+		.pipe(gulp.dest('dist/es6'))
+		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())
 		.pipe(gulpTerser())
-		.pipe(gulpUglify())
 		.pipe(gulpSourceMaps.write('.'))
-		.pipe(gulp.dest('dist/browser/es6'));
+		.pipe(gulp.dest('dist/es6'));
 }
 
 function nodeBuild() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { NODE: true } }))
-		.pipe(gulpSourceMaps.init())
-		.pipe(gulpTerser())
-		.pipe(gulpUglify())
-		.pipe(gulpSourceMaps.write('.'))
+		.pipe(gulpPreProcess({ context: { TARGET: "NODE" } }))
 		.pipe(gulp.dest('dist/node'));
 }
 
 const build = gulp.parallel(nodeBuild, browserEs5Build, browserEs6Build);
 
+function watch() {
+	gulp.watch('src/**/*.js', build);
+}
+
 module.exports = {
-	build: gulp.series(cleanup, build)
+	build: gulp.series(cleanup, build),
+	watch: gulp.series(cleanup, build, watch)
 };
