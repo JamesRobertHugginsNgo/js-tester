@@ -1,4 +1,4 @@
-const jsTester = require('../../dist/node/js-tester');
+const jsTester = require('../../index');
 
 Promise.resolve()
 	/////////////////////////////////////////////////////////////////////////////

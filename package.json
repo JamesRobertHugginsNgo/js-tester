@@ -2,9 +2,10 @@
   "name": "js-tester",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/node/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "gulp build",
+    "watch": "gulp watch",
     "test": "node ./test/node/index.js"
   },
   "repository": {
