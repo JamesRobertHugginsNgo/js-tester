@@ -2,4 +2,4 @@
 
 A simple function for testing JavaScript codes.
 
-Version 1.0.1
+Version 2.0.0
