@@ -1,7 +1,7 @@
 {
   "name": "js-tester",
   "version": "2.0.0",
-  "description": "",
+  "description": "Tool for testing JavaScript codes.",
   "main": "index.js",
   "scripts": {
     "build": "gulp build",
