@@ -13,11 +13,11 @@ function cleanup() {
 
 function browserEs5Build() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { TARGET: "BROWSER" } }))
-		.pipe(gulp.dest('dist/es5'))
-		.pipe(gulpRename((path) => path.basename += '.min'))
-		.pipe(gulpSourceMaps.init())
+		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES_VERSION: 5 } }))
 		.pipe(gulpBabel())
+		.pipe(gulp.dest('dist/es5'))
+		.pipe(gulpSourceMaps.init())
+		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpUglify())
 		.pipe(gulpSourceMaps.write('.'))
 		.pipe(gulp.dest('dist/es5'));
@@ -25,7 +25,7 @@ function browserEs5Build() {
 
 function browserEs6Build() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { TARGET: "BROWSER" } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES_VERSION: 6 } }))
 		.pipe(gulp.dest('dist/es6'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())
@@ -36,7 +36,7 @@ function browserEs6Build() {
 
 function nodeBuild() {
 	return gulp.src('src/**/*.js')
-		.pipe(gulpPreProcess({ context: { TARGET: "NODE" } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'NODE', ES_VERSION: 6 } }))
 		.pipe(gulp.dest('dist/node'));
 }
 

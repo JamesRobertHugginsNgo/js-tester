@@ -1,81 +1,134 @@
+"use strict";
+
 /**
  * Executes code and allow tests to be done agains the resulting value
  * @param  {...any} args
  * @returns {Promise}
- * @example
- * const tester = jsTester(() => {});
- * @example
- * const tester = jsTester('LABEL', () => {});
- * @example
- * const tester = jsTester({}, 'LABEL', () => {});
  */
-function jsTester(...args) {
-	if (args.length === 1) {
-		return jsTester(null, ...args);
-	}
-	if (args.length === 2) {
-		return jsTester({}, ...args);
-	}
+var jsTester = function () {
+  var processTestResult = function processTestResult(passed) {
+    if (passed) {
+      console.log("    %c\u2714 Passed", 'color: green;');
+    } else {
+      console.log("    %c\u2716 Failed", 'color: red;');
+    }
+  };
 
-	const [initValue, label, code] = args;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-	const tests = [];
+    if (args.length === 1) {
+      return jsTester.apply(void 0, [null].concat(args));
+    }
 
-	return {
-		test(...args) {
-			if (args.length === 1) {
-				return this.test(null, ...args);
-			}
+    if (args.length === 2) {
+      return jsTester.apply(void 0, [{}].concat(args));
+    }
 
-			const [label, code] = args;
+    var initValue = args[0],
+        label = args[1],
+        code = args[2];
+    var tests = [];
+    return {
+      test: function test() {
+        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          args[_key2] = arguments[_key2];
+        }
 
-			tests.push((value) => {
-				return Promise.resolve().then(() => {
-					if (label) {
-						console.log(`  ${label}`);
-					}
+        if (args.length === 1) {
+          return this.test.apply(this, [null].concat(args));
+        }
 
-					return code(value);
-				}).then((passed) => {
-					if (passed) {
-						console.log('    %c\u2714 Passed', 'color: green;');
-					} else {
-						console.log('    %c\u2716 Failed', 'color: red;');
-					}
-				});
-			});
+        var label = args[0],
+            code = args[1];
+        tests.push(function (value) {
+          if (label) {
+            console.log("  ".concat(label));
+          }
 
-			return this;
-		},
+          return code(value);
+        });
+        return this;
+      },
+      func: function func() {
+        return function () {
+          var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initValue;
 
-		func() {
-			return (value = initValue) => {
-				let promise = Promise.resolve().then(() => {
-					if (label) {
-						console.log(label);
-					}
+          if (label) {
+            console.log(label);
+          }
 
-					return code(value);
-				}).then((finalValue = value) => {
-					value = finalValue;
+          var promiseOrValue = code(value);
 
-					return tests.reduce((promise, curTest) => {
-						return promise.then(() => {
-							return curTest(value);
-						});
-					}, Promise.resolve());
-				});
+          if (promiseOrValue instanceof Promise) {
+            promiseOrValue = promiseOrValue.then(function () {
+              var returnValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
+              value = returnValue;
+            });
+          } else {
+            value = promiseOrValue;
+          }
 
-				return promise.then(() => {
-					return value;
-				});
-			};
-		},
+          var _loop = function _loop(index, length) {
+            var test = tests[index];
 
-		end() {
-			return (this.func())();
-		}
-	};
-}
+            if (promiseOrValue instanceof Promise) {
+              promiseOrValue = promiseOrValue.then(function () {
+                return test(value);
+              });
+            } else {
+              var nextPromiseOrValue = test(value);
 
+              if (nextPromiseOrValue instanceof Promise) {
+                if (!(promiseOrValue instanceof Promise)) {
+                  promiseOrValue = Promise.resolve();
+                }
+
+                promiseOrValue = promiseOrValue.then(function () {
+                  return nextPromiseOrValue;
+                });
+              } else {
+                promiseOrValue = nextPromiseOrValue;
+              }
+            }
+
+            if (promiseOrValue instanceof Promise) {
+              promiseOrValue = promiseOrValue.then(processTestResult);
+            } else {
+              processTestResult(promiseOrValue);
+            }
+          };
+
+          for (var index = 0, length = tests.length; index < length; index++) {
+            _loop(index, length);
+          }
+
+          if (promiseOrValue instanceof Promise) {
+            return promiseOrValue.then(function () {
+              return value;
+            });
+          }
+
+          return value;
+        };
+      },
+      end: function end() {
+        return this.func()();
+      },
+      promise: function promise() {
+        var promiseOrValue = this.end();
+
+        if (!(promiseOrValue instanceof Promise)) {
+          return Promise.resolve().then(function () {
+            return promiseOrValue;
+          });
+        }
+
+        return promiseOrValue;
+      }
+    };
+  };
+}();
 /* exported jsTester */

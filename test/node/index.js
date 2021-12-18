@@ -1,23 +1,39 @@
 const jsTester = require('../../index');
 
-Promise.resolve()
-	/////////////////////////////////////////////////////////////////////////////
-	// TEST 1
-	/////////////////////////////////////////////////////////////////////////////
-	.then(jsTester('TESTER 1', () => {
-		return 'TEST';
-	}).test('TEST 1.1', (value) => {
-		return value === 'TEST';
-	}).test('TEST 1.2', (value) => {
-		return value !== 'TEST';
+const value = jsTester({}, 'TESTER 0', (value) => {
+	value.data = 'DATA';
+	return value; // OPTIONAL - VALUE WAS NOT CHANGED
+}).test('TEST PASS', (value) => {
+	return value.data === 'DATA'; // Pass
+}).test('TEST FAIL', (value) => {
+	return value.data !== 'DATA'; // Fail
+}).end();
+
+if (value instanceof Promise) {
+	value.then((value) => {
+		console.log('VALUE', value);
+	});
+} else {
+	console.log('VALUE', value);
+}
+
+Promise.resolve({})
+	.then(jsTester('TESTER 1', (value) => {
+		value.data = 'DATA';
+		return value; // OPTIONAL - VALUE WAS NOT CHANGED
+	}).test('TEST PASS', (value) => {
+		return value.data === 'DATA'; // Pass
+	}).test('TEST FAIL', (value) => {
+		return value.data !== 'DATA'; // Fail
 	}).func())
-	/////////////////////////////////////////////////////////////////////////////
-	// TEST 2
-	/////////////////////////////////////////////////////////////////////////////
-	.then(jsTester('TESTER 2', () => {
-		return 'TEST';
-	}).test('TEST 2.1', (value) => {
-		return value === 'TEST';
-	}).test('TEST 2.2', (value) => {
-		return value !== 'TEST';
-	}).func());
+	.then(jsTester('TESTER 2', (value) => {
+		value.data = value.data + 2;
+		return value; // OPTIONAL - VALUE WAS NOT CHANGED
+	}).test('TEST PASS', (value) => {
+		return value.data === 'DATA2'; // Pass
+	}).test('TEST FAIL', (value) => {
+		return value.data !== 'DATA2'; // Fail
+	}).func())
+	.then((value) => {
+		console.log('VALUE', value);
+	});

@@ -2,80 +2,113 @@
  * Executes code and allow tests to be done agains the resulting value
  * @param  {...any} args
  * @returns {Promise}
- * @example
- * const tester = jsTester(() => {});
- * @example
- * const tester = jsTester('LABEL', () => {});
- * @example
- * const tester = jsTester({}, 'LABEL', () => {});
  */
-function jsTester(...args) {
-	if (args.length === 1) {
-		return jsTester(null, ...args);
-	}
-	if (args.length === 2) {
-		return jsTester({}, ...args);
-	}
+const jsTester = (() => {
+	const processTestResult = (passed) => {
+		if (passed) {
+			console.log('    %c\u2714 Passed', 'color: green;');
+		} else {
+			console.log('    %c\u2716 Failed', 'color: red;');
+		}
+	};
 
-	const [initValue, label, code] = args;
+	return (...args) => {
+		if (args.length === 1) {
+			return jsTester(null, ...args);
+		}
+		if (args.length === 2) {
+			return jsTester({}, ...args);
+		}
+		const [initValue, label, code] = args;
 
-	const tests = [];
+		const tests = [];
+		return {
+			test(...args) {
+				if (args.length === 1) {
+					return this.test(null, ...args);
+				}
+				const [label, code] = args;
 
-	return {
-		test(...args) {
-			if (args.length === 1) {
-				return this.test(null, ...args);
-			}
-
-			const [label, code] = args;
-
-			tests.push((value) => {
-				return Promise.resolve().then(() => {
+				tests.push((value) => {
 					if (label) {
 						console.log(`  ${label}`);
 					}
-
 					return code(value);
-				}).then((passed) => {
-					if (passed) {
-						console.log('    %c\u2714 Passed', 'color: green;');
-					} else {
-						console.log('    %c\u2716 Failed', 'color: red;');
-					}
 				});
-			});
 
-			return this;
-		},
+				return this;
+			},
 
-		func() {
-			return (value = initValue) => {
-				let promise = Promise.resolve().then(() => {
+			func() {
+				return (value = initValue) => {
 					if (label) {
 						console.log(label);
 					}
 
-					return code(value);
-				}).then((finalValue = value) => {
-					value = finalValue;
-
-					return tests.reduce((promise, curTest) => {
-						return promise.then(() => {
-							return curTest(value);
+					let promiseOrValue = code(value);
+					if (promiseOrValue instanceof Promise) {
+						promiseOrValue = promiseOrValue.then((returnValue = value) => {
+							value = returnValue;
 						});
-					}, Promise.resolve());
-				});
+					} else {
+						value = promiseOrValue;
+					}
 
-				return promise.then(() => {
+					for (let index = 0, length = tests.length; index < length; index++) {
+						const test = tests[index];
+
+						if (promiseOrValue instanceof Promise) {
+							promiseOrValue = promiseOrValue.then(() => {
+								return test(value);
+							});
+						} else {
+							const nextPromiseOrValue = test(value);
+							if (nextPromiseOrValue instanceof Promise) {
+								if (!(promiseOrValue instanceof Promise)) {
+									promiseOrValue = Promise.resolve();
+								}
+								promiseOrValue = promiseOrValue.then(() => {
+									return nextPromiseOrValue;
+								});
+							} else {
+								promiseOrValue = nextPromiseOrValue;
+							}
+						}
+
+						if (promiseOrValue instanceof Promise) {
+							promiseOrValue = promiseOrValue.then(processTestResult);
+						} else {
+							processTestResult(promiseOrValue);
+						}
+					}
+
+					if (promiseOrValue instanceof Promise) {
+						return promiseOrValue.then(() => {
+							return value;
+						});
+					}
+
 					return value;
-				});
-			};
-		},
+				};
+			},
 
-		end() {
-			return (this.func())();
-		}
+			end() {
+				return (this.func())();
+			},
+
+			promise() {
+				const promiseOrValue = this.end();
+
+				if (!(promiseOrValue instanceof Promise)) {
+					return Promise.resolve().then(() => {
+						return promiseOrValue;
+					});
+				}
+
+				return promiseOrValue;
+			}
+		};
 	};
-}
+})();
 
 /* exported jsTester */
