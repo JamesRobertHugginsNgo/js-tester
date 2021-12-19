@@ -8,7 +8,7 @@ Tool for testing JavaScript codes.
 
 Install the latest version as an NPM dependency.
 
-```
+``` console
 npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#2.0.0
 ```
 
@@ -30,29 +30,28 @@ Create a JavaScript Tester.
 
 ``` JavaScript
 const tester = jsTester({}, 'TESTER', (value) => {
-	// Code that sets one or more values for testing
-	value.data = 'VALUE';
-	return value; // Optional, value was not changed
+  // Code that sets one or more values for testing
+  value.data = 'VALUE';
+  return value; // Optional, value was not changed
 });
 ```
 
 ### test
+
 Add one or more tests.
 
 ``` JavaScript
 // Add a single test
 tester.test('TEST 1', (value) => {
-	return value.data == null;
+  return value.data == null;
 });
 
 // Chain to add multiple tests
-tester
-	.test('TEST 2', (value) => {
-		return value.data === 'VALUE';
-	})
-	.test('TEST 3', (value) => {
-		return value.data != 'VALUE';
-	});
+tester.test('TEST 2', (value) => {
+  return value.data === 'VALUE';
+}).test('TEST 3', (value) => {
+  return value.data != 'VALUE';
+});
 ```
 
 ### end
