@@ -15,13 +15,18 @@ npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#2.0.0
 ## Usage
 
 ``` JavaScript
-// NodeJS
+// NODEJS
 const jsTester = require('js-tester');
 
-// or
+// OR
 
-// Browser
+// BROWSER + ES5 OR ES6
 /* global jsTester */
+
+// OR
+
+// BROWSER + ES6 MODULE
+import jsTester from 'path/js-tester.js';
 ```
 
 ### jsTester
@@ -30,9 +35,9 @@ Create a JavaScript Tester.
 
 ``` JavaScript
 const tester = jsTester({}, 'TESTER', (value) => {
-  // Code that sets one or more values for testing
+  // EXECUTE CODE, RETURN VALUE FOR TESTING
   value.data = 'VALUE';
-  return value; // Optional, value was not changed
+  return value; // OPTIONAL WHEN VALUE IS NOT CHANGED, RETURN PROMISE FOR ASYNC
 });
 ```
 
@@ -41,15 +46,15 @@ const tester = jsTester({}, 'TESTER', (value) => {
 Add one or more tests.
 
 ``` JavaScript
-// Add a single test
-tester.test('TEST 1', (value) => {
+// ADD A SINGLE TEST
+tester.test('TEST FOR VALUE', (value) => {
   return value.data == null;
 });
 
-// Chain to add multiple tests
-tester.test('TEST 2', (value) => {
+// CHAIN TO ADD MULTIPLE TESTS
+tester.test('TEST PASS', (value) => {
   return value.data === 'VALUE';
-}).test('TEST 3', (value) => {
+}).test('TEST FAIL', (value) => {
   return value.data != 'VALUE';
 });
 ```
@@ -59,7 +64,7 @@ tester.test('TEST 2', (value) => {
 End adding tests and execute. Should not be used with `promise` nor `func` method.
 
 ``` JavaScript
-tester.end();
+tester.end(); // RETURNS A VALUE OR A PROMISE OR THROWS AN ERROR
 ```
 
 ### promise
@@ -67,7 +72,7 @@ tester.end();
 End adding tests and execute, always returns a `Promise` object. Should not be used with `end` nor `func` method.
 
 ``` JavaScript
-tester.promise();
+tester.promise(); // RETURNS A PROMISE
 ```
 
 ### func

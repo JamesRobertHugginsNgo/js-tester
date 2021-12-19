@@ -1,23 +1,39 @@
 /* global jsTester */
 
-Promise.resolve()
-	/////////////////////////////////////////////////////////////////////////////
-	// TEST 1
-	/////////////////////////////////////////////////////////////////////////////
-	.then(jsTester('TESTER 1', () => {
-		return 'TEST';
-	}).test('TEST 1.1', (value) => {
-		return value === 'TEST';
-	}).test('TEST 1.2', (value) => {
-		return value !== 'TEST';
+jsTester({}, 'TESTER 0', (value) => {
+	value.data = 'DATA';
+	return value;
+}).test('TEST PASS', (value) => {
+	return value.data === 'DATA';
+}).test('TEST FAIL', (value) => {
+	return value.data !== 'DATA';
+}).end();
+
+Promise.resolve({})
+	.then(jsTester('TESTER 1', (value) => {
+		return new Promise((resolve) => {
+			value.data = 'DATA';
+			resolve(value);
+		});
+	}).test('TEST PASS', (value) => {
+		return new Promise((resolve) => {
+			setTimeout(() => resolve(value.data === 'DATA'), 500);
+		});
+	}).test('TEST FAIL', (value) => {
+		return new Promise((resolve) => {
+			setTimeout(() => resolve(value.data !== 'DATA'), 500);
+		});
 	}).func())
-	/////////////////////////////////////////////////////////////////////////////
-	// TEST 2
-	/////////////////////////////////////////////////////////////////////////////
-	.then(jsTester('TESTER 2', () => {
-		return 'TEST';
-	}).test('TEST 2.1', (value) => {
-		return value === 'TEST';
-	}).test('TEST 2.2', (value) => {
-		return value !== 'TEST';
-	}).func());
+	.then(jsTester('TESTER 2', (value) => {
+		value.data = value.data + 2;
+		return value;
+	}).test('TEST PASS', (value) => {
+		return value.data === 'DATA2';
+	}).test('TEST FAIL', (value) => {
+		return value.data !== 'DATA2';
+	}).func())
+	.then((value) => {
+		console.log(value);
+	}, (error) => {
+		console.error(error);
+	});

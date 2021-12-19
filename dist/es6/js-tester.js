@@ -1,8 +1,3 @@
-/**
- * Executes code and allow tests to be done agains the resulting value
- * @param  {...any} args
- * @returns {Promise}
- */
 const jsTester = (() => {
 	const processTestResult = (passed) => {
 		if (passed) {

@@ -1,4 +1,4 @@
-const jsTester = require('../../index');
+import jsTester from '../../dist/es6-module/js-tester.js';
 
 jsTester({}, 'TESTER 0', (value) => {
 	value.data = 'DATA';

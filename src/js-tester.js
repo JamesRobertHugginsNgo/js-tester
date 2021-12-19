@@ -1,24 +1,19 @@
-/**
- * Executes code and allow tests to be done agains the resulting value
- * @param  {...any} args
- * @returns {Promise}
- */
 const jsTester = (() => {
 	const processTestResult = (passed) => {
 		if (passed) {
-			// @if TARGET="NODE"
+			/* @if TARGET="NODEJS" */
 			console.log('    \u001b[32m\u2714 Passed\u001b[0m');
-			// @endif
-			// @if TARGET="BROWSER"
+			/* @endif */
+			/* @if TARGET="BROWSER" **
 			console.log('    %c\u2714 Passed', 'color: green;');
-			// @endif
+			/* @endif */
 		} else {
-			// @if TARGET="NODE"
+			/* @if TARGET="NODEJS" */
 			console.log('    \u001b[31m\u2716 Failed\u001b[0m');
-			// @endif
-			// @if TARGET="BROWSER"
+			/* @endif */
+			/* @if TARGET="BROWSER" **
 			console.log('    %c\u2716 Failed', 'color: red;');
-			// @endif
+			/* @endif */
 		}
 	};
 
@@ -121,9 +116,12 @@ const jsTester = (() => {
 	};
 })();
 
-// @if TARGET="NODE"
+/* @if MODULE="COMMONJS" */
 module.exports = jsTester;
-// @endif
-// @if TARGET="BROWSER"
+/* @endif */
+/* @if MODULE!="COMMONJS" && MODULE!="ES6" **
 /* exported jsTester */
-// @endif
+/* @endif */
+/* @if MODULE="ES6" **
+export default jsTester;
+/* @endif */

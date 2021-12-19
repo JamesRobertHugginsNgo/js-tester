@@ -1,10 +1,5 @@
 "use strict";
 
-/**
- * Executes code and allow tests to be done agains the resulting value
- * @param  {...any} args
- * @returns {Promise}
- */
 var jsTester = function () {
   var processTestResult = function processTestResult(passed) {
     if (passed) {
