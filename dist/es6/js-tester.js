@@ -1,15 +1,13 @@
-let jsTester;
-
-{
-	const processTestResult = (passed) => {
+const jsTester = (() => {
+	function processTestResult(passed) {
 		if (passed) {
 			console.log('    %c\u2714 Passed', 'color: green;');
 		} else {
 			console.log('    %c\u2716 Failed', 'color: red;');
 		}
-	};
+	}
 
-	jsTester = (...args) => {
+	function jsTester(...args) {
 		if (args.length === 1) {
 			return jsTester(null, ...args);
 		}
@@ -105,7 +103,9 @@ let jsTester;
 				return promiseOrValue;
 			}
 		};
-	};
-}
+	}
+
+	return jsTester;
+})();
 
 /* exported jsTester */

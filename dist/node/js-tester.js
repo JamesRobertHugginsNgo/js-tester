@@ -1,15 +1,13 @@
-let jsTester;
-
-{
-	const processTestResult = (passed) => {
+const jsTester = (() => {
+	function processTestResult(passed) {
 		if (passed) {
 			console.log('    \u001b[32m\u2714 Passed\u001b[0m');
 		} else {
 			console.log('    \u001b[31m\u2716 Failed\u001b[0m');
 		}
-	};
+	}
 
-	jsTester = (...args) => {
+	function jsTester(...args) {
 		if (args.length === 1) {
 			return jsTester(null, ...args);
 		}
@@ -105,7 +103,9 @@ let jsTester;
 				return promiseOrValue;
 			}
 		};
-	};
-}
+	}
+
+	return jsTester;
+})();
 
 module.exports = jsTester;
