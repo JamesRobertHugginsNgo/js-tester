@@ -1,1 +1,1 @@
-module.exports = require('./dist/node/js-tester');
+module.exports = require('./dist/node/js-tester.js');

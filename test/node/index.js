@@ -1,4 +1,4 @@
-const jsTester = require('../../index');
+const jsTester = require('../../index.js');
 
 jsTester({}, 'TESTER 0', (value) => {
 	value.data = 'DATA';
