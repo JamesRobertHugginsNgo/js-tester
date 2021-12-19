@@ -1,4 +1,6 @@
-const jsTester = (() => {
+let jsTester;
+
+{
 	const processTestResult = (passed) => {
 		if (passed) {
 			console.log('    %c\u2714 Passed', 'color: green;');
@@ -7,7 +9,7 @@ const jsTester = (() => {
 		}
 	};
 
-	return (...args) => {
+	jsTester = (...args) => {
 		if (args.length === 1) {
 			return jsTester(null, ...args);
 		}
@@ -104,6 +106,6 @@ const jsTester = (() => {
 			}
 		};
 	};
-})();
+}
 
 /* exported jsTester */

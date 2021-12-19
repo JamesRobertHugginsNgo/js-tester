@@ -1,6 +1,8 @@
 "use strict";
 
-var jsTester = function () {
+var _jsTester;
+
+{
   var processTestResult = function processTestResult(passed) {
     if (passed) {
       console.log("    %c\u2714 Passed", 'color: green;');
@@ -9,17 +11,17 @@ var jsTester = function () {
     }
   };
 
-  return function () {
+  _jsTester = function jsTester() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
     if (args.length === 1) {
-      return jsTester.apply(void 0, [null].concat(args));
+      return _jsTester.apply(void 0, [null].concat(args));
     }
 
     if (args.length === 2) {
-      return jsTester.apply(void 0, [{}].concat(args));
+      return _jsTester.apply(void 0, [{}].concat(args));
     }
 
     var initValue = args[0],
@@ -125,5 +127,5 @@ var jsTester = function () {
       }
     };
   };
-}();
+}
 /* exported jsTester */

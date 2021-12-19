@@ -1,4 +1,6 @@
-const jsTester = (() => {
+let jsTester;
+
+{
 	const processTestResult = (passed) => {
 		if (passed) {
 			/* @if TARGET="NODEJS" */
@@ -17,7 +19,7 @@ const jsTester = (() => {
 		}
 	};
 
-	return (...args) => {
+	jsTester = (...args) => {
 		if (args.length === 1) {
 			return jsTester(null, ...args);
 		}
@@ -114,7 +116,7 @@ const jsTester = (() => {
 			}
 		};
 	};
-})();
+}
 
 /* @if MODULE="COMMONJS" */
 module.exports = jsTester;

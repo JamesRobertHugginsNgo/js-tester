@@ -1,4 +1,6 @@
-const jsTester = (() => {
+let jsTester;
+
+{
 	const processTestResult = (passed) => {
 		if (passed) {
 			console.log('    \u001b[32m\u2714 Passed\u001b[0m');
@@ -7,7 +9,7 @@ const jsTester = (() => {
 		}
 	};
 
-	return (...args) => {
+	jsTester = (...args) => {
 		if (args.length === 1) {
 			return jsTester(null, ...args);
 		}
@@ -104,6 +106,6 @@ const jsTester = (() => {
 			}
 		};
 	};
-})();
+}
 
 module.exports = jsTester;
