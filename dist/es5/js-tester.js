@@ -2,6 +2,12 @@
 
 var jsTester = function () {
   function processTestResult(passed) {
+    if (passed instanceof Promise) {
+      return passed.then(function (value) {
+        return processTestResult(value);
+      });
+    }
+
     if (passed) {
       console.log("    %c\u2714 Passed", 'color: green;');
     } else {
@@ -43,85 +49,67 @@ var jsTester = function () {
             console.log("  ".concat(label));
           }
 
-          return code(value);
+          return processTestResult(code(value));
         });
         return this;
       },
-      func: function func() {
-        return function () {
-          var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initValue;
+      callback: function callback() {
+        var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initValue;
 
-          if (label) {
-            console.log(label);
-          }
+        if (label) {
+          console.log(label);
+        }
 
-          var promiseOrValue = code(value);
+        var promiseOrValue = code(value);
+
+        if (promiseOrValue instanceof Promise) {
+          promiseOrValue = promiseOrValue.then(function () {
+            var returnValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
+            value = returnValue;
+          });
+        } else {
+          value = promiseOrValue;
+        }
+
+        var _loop = function _loop(index, length) {
+          var test = tests[index];
 
           if (promiseOrValue instanceof Promise) {
             promiseOrValue = promiseOrValue.then(function () {
-              var returnValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
-              value = returnValue;
+              return test(value);
             });
           } else {
-            value = promiseOrValue;
+            promiseOrValue = test(value);
           }
-
-          var _loop = function _loop(index, length) {
-            var test = tests[index];
-
-            if (promiseOrValue instanceof Promise) {
-              promiseOrValue = promiseOrValue.then(function () {
-                return test(value);
-              });
-            } else {
-              var nextPromiseOrValue = test(value);
-
-              if (nextPromiseOrValue instanceof Promise) {
-                if (!(promiseOrValue instanceof Promise)) {
-                  promiseOrValue = Promise.resolve();
-                }
-
-                promiseOrValue = promiseOrValue.then(function () {
-                  return nextPromiseOrValue;
-                });
-              } else {
-                promiseOrValue = nextPromiseOrValue;
-              }
-            }
-
-            if (promiseOrValue instanceof Promise) {
-              promiseOrValue = promiseOrValue.then(processTestResult);
-            } else {
-              processTestResult(promiseOrValue);
-            }
-          };
-
-          for (var index = 0, length = tests.length; index < length; index++) {
-            _loop(index, length);
-          }
-
-          if (promiseOrValue instanceof Promise) {
-            return promiseOrValue.then(function () {
-              return value;
-            });
-          }
-
-          return value;
         };
-      },
-      end: function end() {
-        return this.func()();
-      },
-      promise: function promise() {
-        var promiseOrValue = this.end();
 
-        if (!(promiseOrValue instanceof Promise)) {
-          return Promise.resolve().then(function () {
-            return promiseOrValue;
+        for (var index = 0, length = tests.length; index < length; index++) {
+          _loop(index, length);
+        }
+
+        if (promiseOrValue instanceof Promise) {
+          return promiseOrValue.then(function () {
+            return value;
           });
         }
 
-        return promiseOrValue;
+        return value;
+      },
+      end: function end() {
+        return this.callback();
+      },
+      promise: function promise() {
+        try {
+          var promiseOrValue = this.end();
+
+          if (promiseOrValue instanceof Promise) {
+            return promiseOrValue;
+          }
+
+          return Promise.resolve(promiseOrValue);
+        } catch (error) {
+          return Promise.reject(error);
+        }
       }
     };
   }
