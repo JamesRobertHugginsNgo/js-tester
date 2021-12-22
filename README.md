@@ -1,6 +1,6 @@
 # js-tester
 
-Version 3.0.1
+Version 4.0.0
 
 Tool for testing JavaScript codes.
 
@@ -9,68 +9,43 @@ Tool for testing JavaScript codes.
 Install the latest version as an NPM dependency.
 
 ``` console
-npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#3.0.1
+npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#4.0.0
 ```
 
 ## Usage
 
-For NodeJS:
-
 ``` JavaScript
+// NODEJS
 const jsTester = require('js-tester');
-```
 
-For web browser (ES5 or ES6):
+// OR
 
-``` JavaScript
+// BROWSER (ES5 OR ES6)
 /* global jsTester */
+
+// OR
+
+// BROWSER (ES6 MODULE)
+import jsTester from './node_module/js-tester/dist/es6-module/js-tester.js';
+
 ```
 
-For web browser (ES6 Module):
-
 ``` JavaScript
-import jsTester from 'path/js-tester.js';
-```
-
-For all:
-
-``` JavaScript
-jsTester({}, 'TEST CODE 0', (value) => {
-  value.data = 'DATA';
-  return value;
-}).test('TEST PASS', (value) => {
-  return value.data === 'DATA';
-}).test('TEST FAIL', (value) => {
-  return value.data !== 'DATA';
-}).end();
-
-Promise.resolve({})
-  .then(jsTester('TEST CODE 1', (value) => {
-    return new Promise((resolve) => {
-      value.data = 'DATA';
-      resolve(value);
-    });
-  }).test('TEST PASS', (value) => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(value.data === 'DATA'), 500);
-    });
-  }).test('TEST FAIL', (value) => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(value.data !== 'DATA'), 500);
-    });
-  }).callback)
-  .then(jsTester('TEST CODE 2', (value) => {
-    value.data = value.data + 2;
-    return value;
-  }).test('TEST PASS', (value) => {
-    return value.data === 'DATA2';
-  }).test('TEST FAIL', (value) => {
-    return value.data !== 'DATA2';
-  }).callback)
-  .then((value) => {
-    console.log(value);
-  }, (error) => {
-    console.error(error);
-  });
-
+Promise.resolve()
+  .then(() => {
+    return jsTester('TESTER 1', () => 'DATA')
+      .test('TEST PASS', (value) => value === 'DATA')
+      .test('TEST FAIL', (value) => value !== 'DATA')
+      .promise()
+      .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
+  })
+  .then(jsTester('TESTER 2', () => 'DATA')
+    .test('TEST PASS', (value) => value === 'DATA')
+    .test('TEST FAIL', (value) => value !== 'DATA')
+    .promise)
+  .then(jsTester('TESTER 3', (value) => `${value} B`)
+    .test('TEST PASS', (value) => value === 'DATA B')
+    .test('TEST FAIL', (value) => value !== 'DATA B')
+    .promise)
+  .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
 ```
