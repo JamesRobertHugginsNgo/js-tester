@@ -1,109 +1,56 @@
-const jsTester = (() => {
-	function processTestResult(passed) {
-		if (passed instanceof Promise) {
-			return passed.then((value) => processTestResult(value));
-		}
+const jsTester = (label, code) => ((label, code) => {
+	const tests = [];
+	return {
+		test(label, code) {
+			tests.push({ label, code });
+			return this;
+		},
 
-		if (passed) {
-			/* @if TARGET="NODEJS" */
-			console.log('    \u001b[32m\u2714 Passed\u001b[0m');
-			/* @endif */
-			/* @if TARGET="BROWSER" **
-			console.log('    %c\u2714 Passed', 'color: green;');
-			/* @endif */
-		} else {
-			/* @if TARGET="NODEJS" */
-			console.log('    \u001b[31m\u2716 Failed\u001b[0m');
-			/* @endif */
-			/* @if TARGET="BROWSER" **
-			console.log('    %c\u2716 Failed', 'color: red;');
-			/* @endif */
-		}
-	}
-
-	function jsTester(...args) {
-		if (args.length === 1) {
-			return jsTester(null, ...args);
-		}
-		if (args.length === 2) {
-			return jsTester({}, ...args);
-		}
-
-		const [initValue, label, code] = args;
-
-		const tests = [];
-
-		return {
-			test(...args) {
-				if (args.length === 1) {
-					return this.test(null, ...args);
-				}
-
-				const [label, code] = args;
-				tests.push((value) => {
-					if (label) {
-						console.log(`  ${label}`);
-					}
-					return processTestResult(code(value));
-				});
-
-				return this;
-			},
-
-			callback(value = initValue) {
-				if (label) {
+		promise(data = {}) {
+			let { value = {} } = data;
+			let promise = Promise.resolve(value)
+				.then(() => {
 					console.log(label);
-				}
+					return code(value);
+				})
+				.then((result = value) => void (value = result));
 
-				let promiseOrValue = code(value);
-				if (promiseOrValue instanceof Promise) {
-					promiseOrValue = promiseOrValue.then((returnValue = value) => {
-						value = returnValue;
+			for (let index = 0, length = tests.length; index < length; index++) {
+				const test = tests[index];
+				const { label, code } = test;
+				promise = promise
+					.then(() => {
+						console.log(`  ${label}`);
+						return code(value);
+					})
+					.then((passed) => {
+						if (passed) {
+							/* @if TARGET="NODEJS" */
+							console.log('    \u001b[32m\u2714 Passed\u001b[0m');
+							/* @endif */
+							/* @if TARGET="BROWSER" **
+							console.log('    %c\u2714 Passed', 'color: green;');
+							/* @endif */
+						} else {
+							/* @if TARGET="NODEJS" */
+							console.log('    \u001b[31m\u2716 Failed\u001b[0m');
+							/* @endif */
+							/* @if TARGET="BROWSER" **
+							console.log('    %c\u2716 Failed', 'color: red;');
+							/* @endif */
+						}
+						Object.assign(test, { passed });
 					});
-				} else {
-					value = promiseOrValue;
-				}
-
-				for (let index = 0, length = tests.length; index < length; index++) {
-					const test = tests[index];
-					if (promiseOrValue instanceof Promise) {
-						promiseOrValue = promiseOrValue.then(() => test(value));
-					} else {
-						promiseOrValue = test(value);
-					}
-				}
-
-				if (promiseOrValue instanceof Promise) {
-					return promiseOrValue.then(() => {
-						return value;
-					});
-				}
-
-				return value;
-			},
-
-			end() {
-				return this.callback();
-			},
-
-			promise() {
-				try {
-					const promiseOrValue = this.end();
-
-					if (promiseOrValue instanceof Promise) {
-						return promiseOrValue;
-					}
-
-					return Promise.resolve(promiseOrValue);
-				} catch (error) {
-					return Promise.reject(error);
-				}
 			}
-		};
-	}
 
-	return jsTester;
-})();
+			return promise.then(() => {
+				const { testers = [] } = data;
+				testers.push({ label, value, tests });
+				return { value, testers };
+			});
+		}
+	};
+})(label, code);
 
 /* @if MODULE="COMMONJS" */
 module.exports = jsTester;
