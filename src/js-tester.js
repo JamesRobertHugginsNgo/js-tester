@@ -1,122 +1,56 @@
-const jsTester = (() => {
-	function processTestResult(passed) {
-		if (passed) {
-			/* @if TARGET="NODEJS" */
-			console.log('    \u001b[32m\u2714 Passed\u001b[0m');
-			/* @endif */
-			/* @if TARGET="BROWSER" **
-			console.log('    %c\u2714 Passed', 'color: green;');
-			/* @endif */
-		} else {
-			/* @if TARGET="NODEJS" */
-			console.log('    \u001b[31m\u2716 Failed\u001b[0m');
-			/* @endif */
-			/* @if TARGET="BROWSER" **
-			console.log('    %c\u2716 Failed', 'color: red;');
-			/* @endif */
-		}
-	}
+const jsTester = (label, code) => ((label, code) => {
+	const tests = [];
+	return {
+		test(label, code) {
+			tests.push({ label, code });
+			return this;
+		},
 
-	function jsTester(...args) {
-		if (args.length === 1) {
-			return jsTester(null, ...args);
-		}
-		if (args.length === 2) {
-			return jsTester({}, ...args);
-		}
-		const [initValue, label, code] = args;
-
-		const tests = [];
-		return {
-			test(...args) {
-				if (args.length === 1) {
-					return this.test(null, ...args);
-				}
-				const [label, code] = args;
-
-				tests.push((value) => {
-					if (label) {
-						console.log(`  ${label}`);
-					}
+		promise(data = {}) {
+			let { value = {} } = data;
+			let promise = Promise.resolve(value)
+				.then(() => {
+					console.log(label);
 					return code(value);
-				});
+				})
+				.then((result = value) => void (value = result));
 
-				return this;
-			},
-
-			func() {
-				return (value = initValue) => {
-					if (label) {
-						console.log(label);
-					}
-
-					let promiseOrValue = code(value);
-					if (promiseOrValue instanceof Promise) {
-						promiseOrValue = promiseOrValue.then((returnValue = value) => {
-							value = returnValue;
-						});
-					} else {
-						value = promiseOrValue;
-					}
-
-					for (let index = 0, length = tests.length; index < length; index++) {
-						const test = tests[index];
-
-						if (promiseOrValue instanceof Promise) {
-							promiseOrValue = promiseOrValue.then(() => {
-								return test(value);
-							});
+			for (let index = 0, length = tests.length; index < length; index++) {
+				const test = tests[index];
+				const { label, code } = test;
+				promise = promise
+					.then(() => {
+						console.log(`  ${label}`);
+						return code(value);
+					})
+					.then((passed) => {
+						if (passed) {
+							/* @if TARGET="NODEJS" */
+							console.log('    \u001b[32m\u2714 Passed\u001b[0m');
+							/* @endif */
+							/* @if TARGET="BROWSER" **
+							console.log('    %c\u2714 Passed', 'color: green;');
+							/* @endif */
 						} else {
-							const nextPromiseOrValue = test(value);
-							if (nextPromiseOrValue instanceof Promise) {
-								if (!(promiseOrValue instanceof Promise)) {
-									promiseOrValue = Promise.resolve();
-								}
-								promiseOrValue = promiseOrValue.then(() => {
-									return nextPromiseOrValue;
-								});
-							} else {
-								promiseOrValue = nextPromiseOrValue;
-							}
+							/* @if TARGET="NODEJS" */
+							console.log('    \u001b[31m\u2716 Failed\u001b[0m');
+							/* @endif */
+							/* @if TARGET="BROWSER" **
+							console.log('    %c\u2716 Failed', 'color: red;');
+							/* @endif */
 						}
-
-						if (promiseOrValue instanceof Promise) {
-							promiseOrValue = promiseOrValue.then(processTestResult);
-						} else {
-							processTestResult(promiseOrValue);
-						}
-					}
-
-					if (promiseOrValue instanceof Promise) {
-						return promiseOrValue.then(() => {
-							return value;
-						});
-					}
-
-					return value;
-				};
-			},
-
-			end() {
-				return (this.func())();
-			},
-
-			promise() {
-				const promiseOrValue = this.end();
-
-				if (!(promiseOrValue instanceof Promise)) {
-					return Promise.resolve().then(() => {
-						return promiseOrValue;
+						Object.assign(test, { passed });
 					});
-				}
-
-				return promiseOrValue;
 			}
-		};
-	}
 
-	return jsTester;
-})();
+			return promise.then(() => {
+				const { testers = [] } = data;
+				testers.push({ label, value, tests });
+				return { value, testers };
+			});
+		}
+	};
+})(label, code);
 
 /* @if MODULE="COMMONJS" */
 module.exports = jsTester;

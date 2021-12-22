@@ -1,131 +1,67 @@
 "use strict";
 
-var jsTester = function () {
-  function processTestResult(passed) {
-    if (passed) {
-      console.log("    %c\u2714 Passed", 'color: green;');
-    } else {
-      console.log("    %c\u2716 Failed", 'color: red;');
-    }
-  }
-
-  function jsTester() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    if (args.length === 1) {
-      return jsTester.apply(void 0, [null].concat(args));
-    }
-
-    if (args.length === 2) {
-      return jsTester.apply(void 0, [{}].concat(args));
-    }
-
-    var initValue = args[0],
-        label = args[1],
-        code = args[2];
+var jsTester = function jsTester(label, code) {
+  return function (label, code) {
     var tests = [];
     return {
-      test: function test() {
-        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          args[_key2] = arguments[_key2];
-        }
-
-        if (args.length === 1) {
-          return this.test.apply(this, [null].concat(args));
-        }
-
-        var label = args[0],
-            code = args[1];
-        tests.push(function (value) {
-          if (label) {
-            console.log("  ".concat(label));
-          }
-
-          return code(value);
+      test: function test(label, code) {
+        tests.push({
+          label: label,
+          code: code
         });
         return this;
       },
-      func: function func() {
-        return function () {
-          var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initValue;
-
-          if (label) {
-            console.log(label);
-          }
-
-          var promiseOrValue = code(value);
-
-          if (promiseOrValue instanceof Promise) {
-            promiseOrValue = promiseOrValue.then(function () {
-              var returnValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
-              value = returnValue;
-            });
-          } else {
-            value = promiseOrValue;
-          }
-
-          var _loop = function _loop(index, length) {
-            var test = tests[index];
-
-            if (promiseOrValue instanceof Promise) {
-              promiseOrValue = promiseOrValue.then(function () {
-                return test(value);
-              });
-            } else {
-              var nextPromiseOrValue = test(value);
-
-              if (nextPromiseOrValue instanceof Promise) {
-                if (!(promiseOrValue instanceof Promise)) {
-                  promiseOrValue = Promise.resolve();
-                }
-
-                promiseOrValue = promiseOrValue.then(function () {
-                  return nextPromiseOrValue;
-                });
-              } else {
-                promiseOrValue = nextPromiseOrValue;
-              }
-            }
-
-            if (promiseOrValue instanceof Promise) {
-              promiseOrValue = promiseOrValue.then(processTestResult);
-            } else {
-              processTestResult(promiseOrValue);
-            }
-          };
-
-          for (var index = 0, length = tests.length; index < length; index++) {
-            _loop(index, length);
-          }
-
-          if (promiseOrValue instanceof Promise) {
-            return promiseOrValue.then(function () {
-              return value;
-            });
-          }
-
-          return value;
-        };
-      },
-      end: function end() {
-        return this.func()();
-      },
       promise: function promise() {
-        var promiseOrValue = this.end();
+        var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var _data$value = data.value,
+            value = _data$value === void 0 ? {} : _data$value;
+        var promise = Promise.resolve(value).then(function () {
+          console.log(label);
+          return code(value);
+        }).then(function () {
+          var result = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
+          return void (value = result);
+        });
 
-        if (!(promiseOrValue instanceof Promise)) {
-          return Promise.resolve().then(function () {
-            return promiseOrValue;
+        var _loop = function _loop(index, length) {
+          var test = tests[index];
+          var label = test.label,
+              code = test.code;
+          promise = promise.then(function () {
+            console.log("  ".concat(label));
+            return code(value);
+          }).then(function (passed) {
+            if (passed) {
+              console.log("    %c\u2714 Passed", 'color: green;');
+            } else {
+              console.log("    %c\u2716 Failed", 'color: red;');
+            }
+
+            Object.assign(test, {
+              passed: passed
+            });
           });
+        };
+
+        for (var index = 0, length = tests.length; index < length; index++) {
+          _loop(index, length);
         }
 
-        return promiseOrValue;
+        return promise.then(function () {
+          var _data$testers = data.testers,
+              testers = _data$testers === void 0 ? [] : _data$testers;
+          testers.push({
+            label: label,
+            value: value,
+            tests: tests
+          });
+          return {
+            value: value,
+            testers: testers
+          };
+        });
       }
     };
-  }
-
-  return jsTester;
-}();
+  }(label, code);
+};
 /* exported jsTester */

@@ -1,39 +1,19 @@
 import jsTester from '../../dist/es6-module/js-tester.js';
 
-jsTester({}, 'TESTER 0', (value) => {
-	value.data = 'DATA';
-	return value;
-}).test('TEST PASS', (value) => {
-	return value.data === 'DATA';
-}).test('TEST FAIL', (value) => {
-	return value.data !== 'DATA';
-}).end();
-
-Promise.resolve({})
-	.then(jsTester('TESTER 1', (value) => {
-		return new Promise((resolve) => {
-			value.data = 'DATA';
-			resolve(value);
-		});
-	}).test('TEST PASS', (value) => {
-		return new Promise((resolve) => {
-			setTimeout(() => resolve(value.data === 'DATA'), 500);
-		});
-	}).test('TEST FAIL', (value) => {
-		return new Promise((resolve) => {
-			setTimeout(() => resolve(value.data !== 'DATA'), 500);
-		});
-	}).func())
-	.then(jsTester('TESTER 2', (value) => {
-		value.data = value.data + 2;
-		return value;
-	}).test('TEST PASS', (value) => {
-		return value.data === 'DATA2';
-	}).test('TEST FAIL', (value) => {
-		return value.data !== 'DATA2';
-	}).func())
-	.then((value) => {
-		console.log(value);
-	}, (error) => {
-		console.error(error);
-	});
+Promise.resolve()
+  .then(() => {
+    return jsTester('TESTER 1', () => 'DATA')
+      .test('TEST PASS', (value) => value === 'DATA')
+      .test('TEST FAIL', (value) => value !== 'DATA')
+      .promise()
+      .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
+  })
+  .then(jsTester('TESTER 2', () => 'DATA')
+    .test('TEST PASS', (value) => value === 'DATA')
+    .test('TEST FAIL', (value) => value !== 'DATA')
+    .promise)
+  .then(jsTester('TESTER 3', (value) => `${value} B`)
+    .test('TEST PASS', (value) => value === 'DATA B')
+    .test('TEST FAIL', (value) => value !== 'DATA B')
+    .promise)
+  .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
