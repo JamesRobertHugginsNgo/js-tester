@@ -6,7 +6,11 @@ const jsTester = (label, code) => ((label, code) => {
 			return this;
 		},
 
-		promise(data = {}) {
+		promise(data) {
+			if (!data || typeof data != 'object') {
+				data = {};
+			}
+
 			let { value = {} } = data;
 			let promise = Promise.resolve(value)
 				.then(() => {
