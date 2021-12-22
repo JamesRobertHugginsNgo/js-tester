@@ -1,5 +1,7 @@
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 var jsTester = function jsTester(label, code) {
   return function (label, code) {
     var tests = [];
@@ -11,9 +13,13 @@ var jsTester = function jsTester(label, code) {
         });
         return this;
       },
-      promise: function promise() {
-        var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        var _data$value = data.value,
+      promise: function promise(data) {
+        if (!data || _typeof(data) != 'object') {
+          data = {};
+        }
+
+        var _data = data,
+            _data$value = _data.value,
             value = _data$value === void 0 ? {} : _data$value;
         var promise = Promise.resolve(value).then(function () {
           console.log(label);
@@ -48,8 +54,9 @@ var jsTester = function jsTester(label, code) {
         }
 
         return promise.then(function () {
-          var _data$testers = data.testers,
-              testers = _data$testers === void 0 ? [] : _data$testers;
+          var _data2 = data,
+              _data2$testers = _data2.testers,
+              testers = _data2$testers === void 0 ? [] : _data2$testers;
           testers.push({
             label: label,
             value: value,
