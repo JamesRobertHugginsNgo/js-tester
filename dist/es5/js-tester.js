@@ -45,7 +45,7 @@ var jsTester = function () {
           return code(value);
         }).then(function () {
           var result = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
-          value = result;
+          return void (value = result);
         });
 
         var _loop = function _loop(index, length) {

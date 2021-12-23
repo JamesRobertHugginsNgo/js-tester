@@ -1,6 +1,6 @@
 # js-tester
 
-Version 4.1.0
+Version 5.0.0
 
 Tool for testing JavaScript codes.
 
@@ -9,7 +9,7 @@ Tool for testing JavaScript codes.
 Install the latest version as an NPM dependency.
 
 ``` console
-npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#4.1.0
+npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#5.0.0
 ```
 
 ## Usage
@@ -27,18 +27,18 @@ const jsTester = require('js-tester');
 
 // BROWSER (ES6 MODULE)
 import jsTester from './node_module/js-tester/dist/es6-module/js-tester.js';
+```
 
+``` JavaScript
+jsTester('TESTER 1', () => 'DATA')
+  .test('TEST PASS', (value) => value === 'DATA')
+  .test('TEST FAIL', (value) => value !== 'DATA')
+  .promise()
+  .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
 ```
 
 ``` JavaScript
 Promise.resolve()
-  .then(() => {
-    return jsTester('TESTER 1', () => 'DATA')
-      .test('TEST PASS', (value) => value === 'DATA')
-      .test('TEST FAIL', (value) => value !== 'DATA')
-      .promise()
-      .then((data) => void console.log(JSON.stringify(data, null, 2)), (error) => void console.error(error));
-  })
   .then(jsTester('TESTER 2', () => 'DATA')
     .test('TEST PASS', (value) => value === 'DATA')
     .test('TEST FAIL', (value) => value !== 'DATA')

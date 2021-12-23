@@ -38,9 +38,7 @@ const jsTester = (() => {
 						console.log(label);
 						return code(value);
 					})
-					.then((result = value) => {
-						value = result;
-					});
+					.then((result = value) => void (value = result));
 
 				for (let index = 0, length = tests.length; index < length; index++) {
 					const { label, code } = tests[index];
