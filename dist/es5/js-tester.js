@@ -41,7 +41,7 @@ var jsTester = function () {
             _data$value = _data.value,
             value = _data$value === void 0 ? {} : _data$value;
         var promise = Promise.resolve(value).then(function () {
-          console.log(label);
+          console.group(label);
           return code(value);
         }).then(function () {
           var result = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
@@ -53,19 +53,20 @@ var jsTester = function () {
               label = _tests$index.label,
               code = _tests$index.code;
           promise = promise.then(function () {
-            console.log("  ".concat(label));
+            console.group(label);
             return code(value);
           }).then(function (passed) {
             if (passed) {
-              console.log("    %c\u2714 Passed", 'color: green;');
+              console.log("%c\u2714 Passed", 'color: green;');
             } else {
-              console.log("    %c\u2716 Failed", 'color: red;');
+              console.log("%c\u2716 Failed", 'color: red;');
             }
 
             tests[index] = {
               label: label,
               passed: passed
             };
+            console.groupEnd();
           });
         };
 
@@ -74,6 +75,7 @@ var jsTester = function () {
         }
 
         return promise.then(function () {
+          console.groupEnd();
           var _data2 = data,
               _data2$testers = _data2.testers,
               testers = _data2$testers === void 0 ? [] : _data2$testers;

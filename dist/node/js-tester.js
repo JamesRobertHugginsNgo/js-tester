@@ -35,7 +35,7 @@ const jsTester = (() => {
 				let { value = {} } = data;
 				let promise = Promise.resolve(value)
 					.then(() => {
-						console.log(label);
+						console.group(label);
 						return code(value);
 					})
 					.then((result = value) => void (value = result));
@@ -44,21 +44,26 @@ const jsTester = (() => {
 					const { label, code } = tests[index];
 					promise = promise
 						.then(() => {
-							console.log(`  ${label}`);
+							console.group(label);
+
 							return code(value);
 						})
 						.then((passed) => {
 							if (passed) {
-								console.log('    \u001b[32m\u2714 Passed\u001b[0m');
+								console.log('\u001b[32m\u2714 Passed\u001b[0m');
 							} else {
-								console.log('    \u001b[31m\u2716 Failed\u001b[0m');
+								console.log('\u001b[31m\u2716 Failed\u001b[0m');
 							}
 
 							tests[index] = { label, passed };
+
+							console.groupEnd();
 						});
 				}
 
 				return promise.then(() => {
+					console.groupEnd();
+
 					const { testers = [] } = data;
 					testers.push({ label, value, tests });
 					return { value, testers };
