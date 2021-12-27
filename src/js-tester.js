@@ -3,7 +3,7 @@ const jsTester = (() => {
 	 * @param {string} label
 	 * @param {function} code
 	 */
-	function jsTester (label, code) {
+	function jsTester(label, code) {
 		const tests = [];
 
 		return {
@@ -68,6 +68,9 @@ const jsTester = (() => {
 							tests[index] = { label, passed };
 
 							console.groupEnd();
+						}, (error) => {
+							console.groupEnd();
+							return Promise.reject(error);
 						});
 				}
 
@@ -77,6 +80,9 @@ const jsTester = (() => {
 					const { testers = [] } = data;
 					testers.push({ label, value, tests });
 					return { value, testers };
+				}, (error) => {
+					console.groupEnd();
+					return Promise.reject(error);
 				});
 			}
 		};
