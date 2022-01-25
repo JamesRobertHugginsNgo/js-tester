@@ -1,78 +1,80 @@
-const jsTester = (() => {
-	/**
-	 * @param {string} label
-	 * @param {function} code
-	 */
-	function jsTester (label, code) {
-		const tests = [];
+/**
+ * @param {string} label
+ * @param {function} code
+ */
+function jsTester(label, code) {
+	const tests = [];
 
-		return {
-			/**
-			 * @param {string} label
-			 * @param {function} code
-			 */
-			test(label, code) {
-				tests.push({ label, code });
+	return {
+		/**
+		 * @param {string} label
+		 * @param {function} code
+		 */
+		test(label, code) {
+			tests.push({ label, code });
 
-				return this;
-			},
+			return this;
+		},
 
-			/**
-			 * @param {object} data
-			 * @param {*} [data.value]
-			 * @param {object[]} [data.testers]
-			 * @param {string} data.testers[].label
-			 * @param {*} data.testers[].value
-			 * @param {object[]} data.testers[].tests
-			 * @param {string} data.testers[].tests[].label
-			 * @param {boolean} data.testers[].tests[].passed
-			 */
-			promise(data) {
-				if (!data || typeof data != 'object') {
-					data = {};
-				}
+		/**
+		 * @param {object} data
+		 * @param {*} [data.value]
+		 * @param {object[]} [data.testers]
+		 * @param {string} data.testers[].label
+		 * @param {*} data.testers[].value
+		 * @param {object[]} data.testers[].tests
+		 * @param {string} data.testers[].tests[].label
+		 * @param {boolean} data.testers[].tests[].passed
+		 */
+		promise(data) {
+			if (!data || typeof data != 'object') {
+				data = {};
+			}
 
-				let { value = {} } = data;
-				let promise = Promise.resolve(value)
+			let { value = {} } = data;
+			let promise = Promise.resolve(value)
+				.then(() => {
+					console.group(label);
+					return code(value);
+				})
+				.then((result = value) => void (value = result));
+
+			for (let index = 0, length = tests.length; index < length; index++) {
+				const { label, code } = tests[index];
+				promise = promise
 					.then(() => {
 						console.group(label);
+
 						return code(value);
 					})
-					.then((result = value) => void (value = result));
+					.then((passed) => {
+						if (passed) {
+							console.log('%c\u2714 Passed', 'color: green;');
+						} else {
+							console.log('%c\u2716 Failed', 'color: red;');
+						}
 
-				for (let index = 0, length = tests.length; index < length; index++) {
-					const { label, code } = tests[index];
-					promise = promise
-						.then(() => {
-							console.group(label);
+						tests[index] = { label, passed };
 
-							return code(value);
-						})
-						.then((passed) => {
-							if (passed) {
-								console.log('%c\u2714 Passed', 'color: green;');
-							} else {
-								console.log('%c\u2716 Failed', 'color: red;');
-							}
-
-							tests[index] = { label, passed };
-
-							console.groupEnd();
-						});
-				}
-
-				return promise.then(() => {
-					console.groupEnd();
-
-					const { testers = [] } = data;
-					testers.push({ label, value, tests });
-					return { value, testers };
-				});
+						console.groupEnd();
+					}, (error) => {
+						console.groupEnd();
+						return Promise.reject(error);
+					});
 			}
-		};
-	}
 
-	return jsTester;
-})();
+			return promise.then(() => {
+				console.groupEnd();
+
+				const { testers = [] } = data;
+				testers.push({ label, value, tests });
+				return { value, testers };
+			}, (error) => {
+				console.groupEnd();
+				return Promise.reject(error);
+			});
+		}
+	};
+}
 
 export default jsTester;
