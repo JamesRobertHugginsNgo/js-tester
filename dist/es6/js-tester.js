@@ -6,6 +6,7 @@ function jsTester(label, code) {
 	const tests = [];
 
 	return {
+
 		/**
 		 * @param {string} label
 		 * @param {function} code
@@ -49,9 +50,13 @@ function jsTester(label, code) {
 					})
 					.then((passed) => {
 						if (passed) {
+
 							console.log('%c\u2714 Passed', 'color: green;');
+
 						} else {
+
 							console.log('%c\u2716 Failed', 'color: red;');
+
 						}
 
 						tests[index] = { label, passed };
