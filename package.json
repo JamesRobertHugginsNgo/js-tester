@@ -6,7 +6,7 @@
   "scripts": {
     "build": "gulp build",
     "watch": "gulp watch",
-    "test": "node ./test/node/index.js",
+    "test": "node test/node/index.js",
     "buildtest": "npm run build && npm run test"
   },
   "repository": {
