@@ -12,7 +12,7 @@ function cleanup() {
 }
 
 function build_node() {
-	return gulp.src('./src/**/*.js')
+	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_node) })
 		.pipe(gulpPreProcess({ context: { TARGET: 'NODEJS', ES: 6, MODULE: 'COMMONJS' } }))
 		.pipe(gulp.dest('./dist/node/'));
 }
@@ -21,7 +21,7 @@ function build_browser_es5_dependency() {
 	return Promise.resolve();
 }
 function build_browser_es5_main() {
-	return gulp.src('./src/**/*.js')
+	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es5_main) })
 		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 5, MODULE: null } }))
 		.pipe(gulpBabel())
 		.pipe(gulp.dest('./dist/es5/'))
@@ -37,7 +37,7 @@ function build_browser_es6_dependency() {
 	return Promise.resolve();
 }
 function build_browser_es6_main() {
-	return gulp.src('./src/**/*.js')
+	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es6_main) })
 		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 6, MODULE: null } }))
 		.pipe(gulp.dest('./dist/es6/'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
@@ -52,7 +52,7 @@ function build_browser_es6Module_dependency() {
 	return Promise.resolve();
 }
 function build_browser_es6Module_main() {
-	return gulp.src('./src/**/*.js')
+	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es6Module_main) })
 		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 6, MODULE: 'ES6' } }))
 		.pipe(gulp.dest('./dist/es6-module'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
