@@ -54,12 +54,12 @@ function build_browser_es6Module_dependency() {
 function build_browser_es6Module_main() {
 	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es6Module_main) })
 		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 6, MODULE: 'ES6' } }))
-		.pipe(gulp.dest('./dist/es6-module'))
+		.pipe(gulp.dest('./dist/es6-module/'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())
 		.pipe(gulpTerser())
 		.pipe(gulpSourceMaps.write('.'))
-		.pipe(gulp.dest('./dist/es6-module'));
+		.pipe(gulp.dest('./dist/es6-module/'));
 }
 const build_browser_es6Module = gulp.parallel(build_browser_es6Module_dependency, build_browser_es6Module_main);
 
