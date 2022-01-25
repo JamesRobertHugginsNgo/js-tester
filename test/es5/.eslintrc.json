@@ -2,6 +2,7 @@
     "env": {
         "browser": true,
         "commonjs": false,
+        "es6": false,
         "node": false
     },
     "rules": {
