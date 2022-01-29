@@ -49,13 +49,9 @@ function jsTester(label, code) {
 					})
 					.then((passed) => {
 						if (passed) {
-
 							console.log('\u001b[32m\u2714 Passed\u001b[0m');
-
 						} else {
-
 							console.log('\u001b[31m\u2716 Failed\u001b[0m');
-
 						}
 
 						tests[index] = { label, passed };

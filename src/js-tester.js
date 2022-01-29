@@ -49,23 +49,19 @@ function jsTester(label, code) {
 					})
 					.then((passed) => {
 						if (passed) {
-
 							/* @if TARGET="NODEJS" */
 							console.log('\u001b[32m\u2714 Passed\u001b[0m');
 							/* @endif */
 							/* @if TARGET="BROWSER_ES5" || TARGET="BROWSER_ES6" || TARGET="BROWSER_ES6MODULE" **
 							console.log('%c\u2714 Passed', 'color: green;');
 							/* @endif */
-
 						} else {
-
 							/* @if TARGET="NODEJS" */
 							console.log('\u001b[31m\u2716 Failed\u001b[0m');
 							/* @endif */
 							/* @if TARGET="BROWSER_ES5" || TARGET="BROWSER_ES6" || TARGET="BROWSER_ES6MODULE" **
 							console.log('%c\u2716 Failed', 'color: red;');
 							/* @endif */
-
 						}
 
 						tests[index] = { label, passed };
