@@ -13,7 +13,7 @@ function cleanup() {
 
 function build_node() {
 	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_node) })
-		.pipe(gulpPreProcess({ context: { TARGET: 'NODEJS', ES: 6, MODULE: 'COMMONJS' } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'NODEJS' } }))
 		.pipe(gulp.dest('./dist/node/'));
 }
 
@@ -22,7 +22,7 @@ function build_browser_es5_dependency() {
 }
 function build_browser_es5_main() {
 	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es5_main) })
-		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 5, MODULE: null } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER_ES5' } }))
 		.pipe(gulpBabel())
 		.pipe(gulp.dest('./dist/es5/'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
@@ -38,7 +38,7 @@ function build_browser_es6_dependency() {
 }
 function build_browser_es6_main() {
 	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es6_main) })
-		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 6, MODULE: null } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER_ES6' } }))
 		.pipe(gulp.dest('./dist/es6/'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())
@@ -53,7 +53,7 @@ function build_browser_es6Module_dependency() {
 }
 function build_browser_es6Module_main() {
 	return gulp.src('./src/**/*.js', { since: gulp.lastRun(build_browser_es6Module_main) })
-		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER', ES: 6, MODULE: 'ES6' } }))
+		.pipe(gulpPreProcess({ context: { TARGET: 'BROWSER_ES6MODULE' } }))
 		.pipe(gulp.dest('./dist/es6-module/'))
 		.pipe(gulpRename((path) => path.basename += '.min'))
 		.pipe(gulpSourceMaps.init())

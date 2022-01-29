@@ -13,7 +13,6 @@ function jsTester(label, code) {
 		 */
 		test(label, code) {
 			tests.push({ label, code });
-
 			return this;
 		},
 
@@ -54,7 +53,7 @@ function jsTester(label, code) {
 							/* @if TARGET="NODEJS" */
 							console.log('\u001b[32m\u2714 Passed\u001b[0m');
 							/* @endif */
-							/* @if TARGET="BROWSER" **
+							/* @if TARGET="BROWSER_ES5" || TARGET="BROWSER_ES6" || TARGET="BROWSER_ES6MODULE" **
 							console.log('%c\u2714 Passed', 'color: green;');
 							/* @endif */
 
@@ -63,7 +62,7 @@ function jsTester(label, code) {
 							/* @if TARGET="NODEJS" */
 							console.log('\u001b[31m\u2716 Failed\u001b[0m');
 							/* @endif */
-							/* @if TARGET="BROWSER" **
+							/* @if TARGET="BROWSER_ES5" || TARGET="BROWSER_ES6" || TARGET="BROWSER_ES6MODULE" **
 							console.log('%c\u2716 Failed', 'color: red;');
 							/* @endif */
 
@@ -80,7 +79,6 @@ function jsTester(label, code) {
 
 			return promise.then(() => {
 				console.groupEnd();
-
 				const { testers = [] } = data;
 				testers.push({ label, value, tests });
 				return { value, testers };
@@ -92,12 +90,12 @@ function jsTester(label, code) {
 	};
 }
 
-/* @if MODULE="COMMONJS" */
+/* @if TARGET="NODEJS" */
 module.exports = jsTester;
 /* @endif */
-/* @if MODULE="ES6" **
+/* @if TARGET="BROWSER_ES6MODULE" **
 export default jsTester;
 /* @endif */
-/* @if MODULE=null **
+/* @if TARGET="BROWSER_ES5" || TARGET="BROWSER_ES6" **
 /* exported jsTester */
 /* @endif */
