@@ -6,13 +6,13 @@ function jsTester(label, code) {
 	const tests = [];
 
 	return {
+
 		/**
 		 * @param {string} label
 		 * @param {function} code
 		 */
 		test(label, code) {
 			tests.push({ label, code });
-
 			return this;
 		},
 
@@ -65,7 +65,6 @@ function jsTester(label, code) {
 
 			return promise.then(() => {
 				console.groupEnd();
-
 				const { testers = [] } = data;
 				testers.push({ label, value, tests });
 				return { value, testers };
