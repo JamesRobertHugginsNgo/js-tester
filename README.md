@@ -1,6 +1,6 @@
 # js-tester
 
-Version 5.1.3
+Version 5.2.0
 
 Tool for testing JavaScript codes.
 
@@ -9,7 +9,7 @@ Tool for testing JavaScript codes.
 Install the latest version as an NPM dependency.
 
 ``` console
-npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#5.1.3
+npm install https://github.com/JamesRobertHugginsNgo/js-tester.git#5.2.0
 ```
 
 ## Usage

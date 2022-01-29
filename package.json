@@ -1,6 +1,6 @@
 {
   "name": "js-tester",
-  "version": "5.1.3",
+  "version": "5.2.0",
   "description": "Tool for testing JavaScript codes.",
   "main": "index.js",
   "scripts": {
